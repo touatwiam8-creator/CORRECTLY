@@ -1,386 +1,539 @@
-// ══════════════════════════════════════════════════════════════════════════
-// 1. إعدادات النظام
-// ══════════════════════════════════════════════════════════════════════════
-
-const SHEET_NAMES = {
-  STUDENTS: 'students',
-  RESULTS: 'scores',
-  LEADERBOARD: 'leaderboard'
-};
-
-const DEEPSEEK_API_KEY = 'sk-7fa2418e7df642289026bcf65c91adc4';
-
-// ══════════════════════════════════════════════════════════════════════════
-// 2. وظائف الذكاء الاصطناعي
-// ══════════════════════════════════════════════════════════════════════════
-
-/**
- * إنشاء تمرين بلاغي جديد
- */
-function generateBalaghaExercise() {
-  const exercises = [
-    {
-      type: "الطباق",
-      prompt: "أنشئ تمريناً عن الطباق يحتوي على جملة تحتوي على طباق، وأسئلة لتحديده."
-    },
-    {
-      type: "المقابلة", 
-      prompt: "أنشئ تمريناً عن المقابلة البلاغية مع أمثلة وأسئلة تحليلية."
-    },
-    {
-      type: "السجع",
-      prompt: "صمم تمريناً عن السجع يتضمن نصوصاً وأسئلة للتعرف على السجع."
-    },
-    {
-      type: "الجناس",
-      prompt: "أنشئ تمريناً عن الجناس بأنواعه مع أمثلة وأسئلة تطبيقية."
-    }
-  ];
-  
-  const exercise = exercises[Math.floor(Math.random() * exercises.length)];
-  
-  const prompt = `
-    أنت معلم بلاغة عربية. ${exercise.prompt}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>رائد - التشخيص الذكي لأعمالك</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- === البداية: الخلفية المتحركة === -->
+    <div class="particles-bg" id="particles"></div>
     
-    أخرج النتيجة بالتنسيق التالي:
+    <!-- === 1. شريط التنقل === -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" onclick="showPage('home')">
+                <i class="fas fa-crown"></i>
+                <span>رائد</span>
+            </div>
+            
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="showPage('home')">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('time')">
+                    <i class="fas fa-clock"></i>
+                    <span>الوقت</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('social')">
+                    <i class="fas fa-comment-dots"></i>
+                    <span>التواصل</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('writing')">
+                    <i class="fas fa-pen-fancy"></i>
+                    <span>الكتابة</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('sales')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>المبيعات</span>
+                </button>
+                <button class="nav-btn" onclick="showPage('results')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>النتائج</span>
+                </button>
+            </div>
+            
+            <button class="menu-toggle" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
     
-    🎯 نوع التمرين: ${exercise.type}
-    📝 السؤال: [ضع السؤال هنا]
-    📖 النص أو المثال: [ضع النص هنا]
-    🧠 الأسئلة: [ضع 3 أسئلة فرعية]
-    ✅ الإجابة النموذجية: [ضع الإجابة الكاملة]
-    💡 الشرح: [اشرح المفهوم البلاغي]
-    
-    اجعل التمرين مناسباً لطلاب المرحلة المتوسطة.
-  `;
-  
-  return callDeepSeekAPI(prompt);
-}
-
-/**
- * إنشاء تمرين إعراب جديد
- */
-function generateI3rabExercise() {
-  const levels = ["مبتدئ", "متوسط", "متقدم"];
-  const level = levels[Math.floor(Math.random() * levels.length)];
-  
-  const prompt = `
-    أنت معلم إعراب عربي. أنشئ تمرين إعراب للمستوى ${level}.
-    
-    التمرين يجب أن يحتوي على:
-    1. جملة أو جملتين تحتاج للإعراب
-    2. أسئلة محددة عن الإعراب
-    3. إعراب مفصل للنص
-    4. شرح للقواعد النحوية المستخدمة
-    5. أمثلة إضافية مشابهة
-    
-    أخرج النتيجة بالتنسيق:
-    
-    🎯 مستوى: ${level}
-    📝 الجملة: [ضع الجملة هنا]
-    ❓ السؤال: [ضع السؤال الرئيسي]
-    🧠 الأسئلة الفرعية: [3 أسئلة]
-    ✅ الإعراب الكامل: [إعراب مفصل]
-    📚 شرح القواعد: [شرح القواعد المستخدمة]
-    🔄 أمثلة إضافية: [2-3 أمثلة]
-  `;
-  
-  return callDeepSeekAPI(prompt);
-}
-
-/**
- * إنشاء وضعية إدماجية جديدة
- */
-function generateCompositionExercise() {
-  const topics = [
-    "أهمية القراءة",
-    "التعاون بين الأصدقاء", 
-    "حماية البيئة",
-    "الرياضة والصحة",
-    "التكنولوجيا والتعليم"
-  ];
-  
-  const topic = topics[Math.floor(Math.random() * topics.length)];
-  
-  const prompt = `
-    أنت معلم لغة عربية. صمم وضعية إدماجية عن: "${topic}"
-    
-    المتطلبات:
-    1. عنوان جذاب
-    2. نص مطلوب من الطالب كتابته (150-200 كلمة)
-    3. معايير التقييم (4 معايير × 25 نقطة)
-    4. توجيهات للطالب
-    5. نموذج للإجابة المثالية
-    
-    أخرج النتيجة بالتنسيق:
-    
-    🎯 الموضوع: ${topic}
-    📌 العنوان: [عنوان جذاب]
-    📝 المطلوب: [تعليمات الكتابة]
-    📏 معايير التقييم:
-      - صحة اللغة (25 نقطة)
-      - التنظيم (25 نقطة)  
-      - الأفكار (25 نقطة)
-      - الإبداع (25 نقطة)
-    ✅ النموذج المثالي: [نص مثالي]
-    💎 نصائح للكتابة: [5 نصائح]
-  `;
-  
-  return callDeepSeekAPI(prompt);
-}
-
-/**
- * تصحيح الإجابة باستخدام الذكاء الاصطناعي
- */
-function correctAnswer(exerciseType, question, userAnswer) {
-  const prompts = {
-    balagha: `قم بتصحيح الإجابة التالية على تمرين بلاغة:
-    
-    السؤال: ${question}
-    
-    إجابة الطالب: ${userAnswer}
-    
-    قم بالتقييم حسب:
-    1. الدقة العلمية (40 نقطة)
-    2. الاكتمال (30 نقطة)
-    3. الوضوح (30 نقطة)
-    
-    أعطِ:
-    - الدرجة من 100
-    - التصويبات
-    - الشرح
-    - نصائح للتحسين`,
-    
-    i3rab: `قم بتصحيح الإجابة التالية على تمرين إعراب:
-    
-    السؤال: ${question}
-    
-    إجابة الطالب: ${userAnswer}
-    
-    قم بالتقييم حسب:
-    1. صحة الإعراب (50 نقطة)
-    2. اكتمال الإجابة (30 نقطة)
-    3. الترتيب والتنظيم (20 نقطة)
-    
-    أعطِ:
-    - الدرجة من 100
-    - التصويبات النحوية
-    - شرح الأخطاء
-    - الإعراب الصحيح`,
-    
-    composition: `قم بتصحيح الوضعية الإدماجية التالية:
-    
-    السؤال: ${question}
-    
-    إجابة الطالب: ${userAnswer}
-    
-    قم بالتقييم حسب المعايير:
-    1. صحة اللغة والنحو (25 نقطة)
-    2. التنظيم والترابط (25 نقطة)
-    3. الغنى اللغوي (25 نقطة)
-    4. الإبداع والأفكار (25 نقطة)
-    
-    أعطِ:
-    - الدرجة الكلية
-    - تقييم كل معيار
-    - نقاط القوة
-    - نقاط الضعف
-    - اقتراحات`
-  };
-  
-  return callDeepSeekAPI(prompts[exerciseType] || prompts.balagha);
-}
-
-/**
- * الاتصال بـ DeepSeek API
- */
-function callDeepSeekAPI(prompt) {
-  try {
-    const url = 'https://api.deepseek.com/v1/chat/completions';
-    const payload = {
-      model: "deepseek-chat",
-      messages: [
-        {
-          role: "system",
-          content: "أنت مساعد عربي متخصص في اللغة العربية، البلاغة، النحو، وتقييم الكتابة. أجِب بالعربية فقط."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      max_tokens: 2000
-    };
-    
-    const options = {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    };
-    
-    const response = UrlFetchApp.fetch(url, options);
-    const data = JSON.parse(response.getContentText());
-    
-    return {
-      success: true,
-      content: data.choices[0].message.content,
-      raw: data
-    };
-    
-  } catch (error) {
-    return {
-      success: false,
-      error: error.message,
-      content: "⚠️ حدث خطأ في الاتصال بالذكاء الاصطناعي. يرجى المحاولة مرة أخرى."
-    };
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// 3. إدارة البيانات
-// ══════════════════════════════════════════════════════════════════════════
-
-function saveResult(email, exerciseType, score, details) {
-  try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAMES.RESULTS);
-    const timestamp = new Date().toLocaleString('ar-SA');
-    
-    sheet.appendRow([email, exerciseType, score, details, timestamp]);
-    
-    // تحديث المتصدرين
-    updateLeaderboard(email, score, exerciseType);
-    
-    return { success: true, message: "تم حفظ النتيجة" };
-  } catch (error) {
-    return { success: false, error: error.message };
-  }
-}
-
-function updateLeaderboard(email, score, exerciseType) {
-  try {
-    const studentsSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAMES.STUDENTS);
-    const studentsData = studentsSheet.getDataRange().getValues();
-    
-    let studentName = "مجهول";
-    for (let i = 1; i < studentsData.length; i++) {
-      if (studentsData[i][0] === email) {
-        studentName = studentsData[i][1];
-        break;
-      }
-    }
-    
-    const leaderboardSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAMES.LEADERBOARD);
-    leaderboardSheet.appendRow([studentName, score, exerciseType, new Date().toLocaleString('ar-SA')]);
-    
-    // ترتيب المتصدرين
-    const lastRow = leaderboardSheet.getLastRow();
-    if (lastRow > 10) {
-      const dataRange = leaderboardSheet.getRange(2, 1, lastRow - 1, 4);
-      const data = dataRange.getValues();
-      
-      data.sort((a, b) => b[1] - a[1]);
-      const top10 = data.slice(0, 10);
-      
-      leaderboardSheet.getRange(2, 1, leaderboardSheet.getLastRow() - 1, 4).clear();
-      if (top10.length > 0) {
-        leaderboardSheet.getRange(2, 1, top10.length, 4).setValues(top10);
-      }
-    }
-    
-  } catch (error) {
-    console.error("Error updating leaderboard:", error);
-  }
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// 4. واجهة API
-// ══════════════════════════════════════════════════════════════════════════
-
-function doPost(e) {
-  try {
-    const requestData = JSON.parse(e.postData.contents);
-    const action = requestData.action;
-    
-    let response;
-    
-    switch (action) {
-      case 'generate_exercise':
-        const type = requestData.type;
-        if (type === 'balagha') {
-          response = generateBalaghaExercise();
-        } else if (type === 'i3rab') {
-          response = generateI3rabExercise();
-        } else if (type === 'composition') {
-          response = generateCompositionExercise();
-        }
-        break;
+    <!-- === 2. الواجهات الست === -->
+    <main class="main-container">
         
-      case 'correct_answer':
-        response = correctAnswer(
-          requestData.exerciseType,
-          requestData.question,
-          requestData.userAnswer
-        );
-        break;
+        <!-- 🔷 الواجهة 1: الرئيسية -->
+        <section id="home-page" class="page active">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">رائد</span>
+                        <br>التشخيص الذكي<br>لأعمالك
+                    </h1>
+                    <p class="hero-subtitle">
+                        اكتشف نقاط القوة والضعف في عملك بتحليل ذكي وصادق
+                    </p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <div class="stat-number">٩٨٪</div>
+                            <div class="stat-label">دقة التشخيص</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-number">٥٠٠+</div>
+                            <div class="stat-label">عملاء راضون</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="stat-number">٤٠٪</div>
+                            <div class="stat-label">تحسن في النتائج</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-buttons">
+                        <button class="btn-primary" onclick="showPage('time')">
+                            <i class="fas fa-play-circle"></i>
+                            ابدأ التشخيص الآن
+                        </button>
+                        <button class="btn-secondary" onclick="showDemo()">
+                            <i class="fas fa-eye"></i>
+                            شاهد مثالاً
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hero-image">
+                    <div class="floating-cards">
+                        <div class="float-card card-1">
+                            <i class="fas fa-clock"></i>
+                            <h4>إدارة الوقت</h4>
+                        </div>
+                        <div class="float-card card-2">
+                            <i class="fas fa-comments"></i>
+                            <h4>التواصل</h4>
+                        </div>
+                        <div class="float-card card-3">
+                            <i class="fas fa-pen"></i>
+                            <h4>الكتابة</h4>
+                        </div>
+                        <div class="float-card card-4">
+                            <i class="fas fa-chart-line"></i>
+                            <h4>المبيعات</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="features-section">
+                <h2 class="section-title">خدمات التشخيص</h2>
+                <div class="features-grid">
+                    <div class="feature-card" onclick="showPage('time')">
+                        <div class="feature-icon time">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>تشخيص إدارة الوقت</h3>
+                        <p>اكتشف كيف تهدر وقتك وكيف تحوله إلى إنتاجية</p>
+                        <div class="feature-badge">🔥 الأكثر طلباً</div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('social')">
+                        <div class="feature-icon social">
+                            <i class="fas fa-hashtag"></i>
+                        </div>
+                        <h3>تشخيص التواصل</h3>
+                        <p>حلل منشوراتك واعرف لماذا لا يتفاعل معها أحد</p>
+                        <div class="feature-badge">📱 على الموضة</div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('writing')">
+                        <div class="feature-icon writing">
+                            <i class="fas fa-feather-alt"></i>
+                        </div>
+                        <h3>تشخيص الكتابة</h3>
+                        <p>حلل كتاباتك وحسّن تأثيرها على القارئ</p>
+                        <div class="feature-badge">✍️ للمحترفين</div>
+                    </div>
+                    
+                    <div class="feature-card" onclick="showPage('sales')">
+                        <div class="feature-icon sales">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <h3>تشخيص المبيعات</h3>
+                        <p>اكتشف نقاط الضعف في إقناعك للعملاء</p>
+                        <div class="feature-badge">💰 يزيد الأرباح</div>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-      case 'save_result':
-        response = saveResult(
-          requestData.email,
-          requestData.exerciseType,
-          requestData.score,
-          requestData.details
-        );
-        break;
+        <!-- ⏰ الواجهة 2: تشخيص الوقت -->
+        <section id="time-page" class="page">
+            <div class="diagnosis-header">
+                <h1>
+                    <i class="fas fa-clock"></i>
+                    تشخيص إدارة الوقت
+                </h1>
+                <p>اكتشف أمراض وقتك المخفية</p>
+            </div>
+            
+            <div class="diagnosis-container">
+                <div class="input-section">
+                    <h3>أخبرنا عن مشكلتك</h3>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-question-circle"></i>
+                            المشكلة الرئيسية:
+                        </label>
+                        <textarea id="time-problem" placeholder="مثال: أعمل 12 ساعة يومياً ولكن لا أنجز شيئاً..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-info-circle"></i>
+                            التفاصيل الإضافية:
+                        </label>
+                        <textarea id="time-details" placeholder="مثال: أبدأ اليوم بتخطيط رائع ولكن أنتهي دون إنجاز..." rows="4"></textarea>
+                    </div>
+                    
+                    <div class="quick-questions">
+                        <h4>أسئلة سريعة:</h4>
+                        <div class="quick-buttons">
+                            <button class="quick-btn" onclick="setTimeExample('تسويف')">أعاني من التسويف</button>
+                            <button class="quick-btn" onclick="setTimeExample('تشتت')">أشعر بالتشتت</button>
+                            <button class="quick-btn" onclick="setTimeExample('إرهاق')">أعمل كثيراً بلا نتائج</button>
+                            <button class="quick-btn" onclick="setTimeExample('أولويات')">لا أعرف أولوياتي</button>
+                        </div>
+                    </div>
+                    
+                    <button class="submit-btn" onclick="analyzeTime()">
+                        <i class="fas fa-stethoscope"></i>
+                        ابدأ التشخيص
+                    </button>
+                </div>
+                
+                <div class="result-section">
+                    <h3>نتيجة التشخيص</h3>
+                    <div class="result-placeholder" id="time-result">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <p>سيظهر تشخيصك هنا بعد التحليل</p>
+                        <small>التشخيص يستخدم الذكاء الاصطناعي لتحليل مشكلتك بدقة</small>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-      case 'register':
-        const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAMES.STUDENTS);
-        const timestamp = new Date().toLocaleString('ar-SA');
-        sheet.appendRow([requestData.email, requestData.name, timestamp]);
-        response = { success: true, message: "تم التسجيل" };
-        break;
+        <!-- 📱 الواجهة 3: تشخيص التواصل -->
+        <section id="social-page" class="page">
+            <div class="diagnosis-header">
+                <h1>
+                    <i class="fas fa-comment-dots"></i>
+                    تشخيص التواصل الاجتماعي
+                </h1>
+                <p>حلل منشوراتك وازد تفاعلاً</p>
+            </div>
+            
+            <div class="diagnosis-container">
+                <div class="input-section">
+                    <h3>ما مشكلة تواصلك؟</h3>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-globe"></i>
+                            المنصة:
+                        </label>
+                        <select id="social-platform">
+                            <option value="twitter">تويتر (X)</option>
+                            <option value="instagram">انستغرام</option>
+                            <option value="linkedin">لينكد إن</option>
+                            <option value="tiktok">تيك توك</option>
+                            <option value="facebook">فيسبوك</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-exclamation-triangle"></i>
+                            المشكلة:
+                        </label>
+                        <textarea id="social-problem" placeholder="مثال: منشوراتي لا تحصل على تفاعل، الناس يشاهدون ولا يعلقون..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-pen"></i>
+                            مثال على منشورك:
+                        </label>
+                        <textarea id="social-example" placeholder="الصق هنا مثالاً على منشورك..." rows="4"></textarea>
+                    </div>
+                    
+                    <button class="submit-btn" onclick="analyzeSocial()">
+                        <i class="fas fa-chart-line"></i>
+                        حلل تواصلي
+                    </button>
+                </div>
+                
+                <div class="result-section">
+                    <h3>تحليل التواصل</h3>
+                    <div class="result-placeholder" id="social-result">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <p>سيظهر تحليل تواصلك هنا</p>
+                        <small>سنحلل أسلوبك ونعطيك نصائح محددة</small>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-      case 'get_leaderboard':
-        const leaderboardSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAMES.LEADERBOARD);
-        const data = leaderboardSheet.getDataRange().getValues();
-        response = data.slice(1).map((row, index) => ({
-          rank: index + 1,
-          name: row[0],
-          score: row[1],
-          type: row[2],
-          date: row[3]
-        }));
-        break;
+        <!-- ✍️ الواجهة 4: تشخيص الكتابة -->
+        <section id="writing-page" class="page">
+            <div class="diagnosis-header">
+                <h1>
+                    <i class="fas fa-pen-fancy"></i>
+                    تشخيص الكتابة والتواصل
+                </h1>
+                <p>حسّن كتاباتك لتؤثر أكثر</p>
+            </div>
+            
+            <div class="diagnosis-container">
+                <div class="input-section">
+                    <h3>ضع نصك للتحليل</h3>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-bullseye"></i>
+                            الغرض من النص:
+                        </label>
+                        <select id="writing-purpose">
+                            <option value="marketing">تسويق وبيع</option>
+                            <option value="communication">تواصل مع عملاء</option>
+                            <option value="social">منشور اجتماعي</option>
+                            <option value="professional">تواصل احترافي</option>
+                            <option value="educational">تعليمي</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-align-left"></i>
+                            النص الذي تريد تحليله:
+                        </label>
+                        <textarea id="writing-text" placeholder="الصق نصك هنا ليتم تحليله..." rows="8"></textarea>
+                        <div class="char-count">
+                            <span id="char-counter">0</span> حرف
+                        </div>
+                    </div>
+                    
+                    <button class="submit-btn" onclick="analyzeWriting()">
+                        <i class="fas fa-search"></i>
+                        حلل كتاباتي
+                    </button>
+                </div>
+                
+                <div class="result-section">
+                    <h3>نتيجة التحليل</h3>
+                    <div class="result-placeholder" id="writing-result">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-feather-alt"></i>
+                        </div>
+                        <p>سيظهر تحليل كتاباتك هنا</p>
+                        <small>سنحلل الأسلوب، القواعد، والتأثير</small>
+                    </div>
+                </div>
+            </div>
+        </section>
         
-      default:
-        response = { success: false, message: "إجراء غير معروف" };
-    }
+        <!-- 💰 الواجهة 5: تشخيص المبيعات -->
+        <section id="sales-page" class="page">
+            <div class="diagnosis-header">
+                <h1>
+                    <i class="fas fa-chart-line"></i>
+                    تشخيص المبيعات والإقناع
+                </h1>
+                <p>زد مبيعاتك بتحسين إقناعك</p>
+            </div>
+            
+            <div class="diagnosis-container">
+                <div class="input-section">
+                    <h3>صف مشكلة مبيعاتك</h3>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-scenario"></i>
+                            السيناريو النموذجي:
+                        </label>
+                        <textarea id="sales-scenario" placeholder="مثال: عندما أعرض المنتج على العميل، يقول سأفكر وأرجع..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-exclamation-circle"></i>
+                            المشكلة الأساسية:
+                        </label>
+                        <textarea id="sales-problem" placeholder="مثال: العملاء يهربون من الشراء، لا أعرف كيف أقنعهم..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>
+                            <i class="fas fa-comment"></i>
+                            ردود العملاء المعتادة:
+                        </label>
+                        <textarea id="sales-responses" placeholder="مثال: يقولون: السعر مرتفع، سأفكر، ليس الآن..." rows="3"></textarea>
+                    </div>
+                    
+                    <button class="submit-btn" onclick="analyzeSales()">
+                        <i class="fas fa-handshake"></i>
+                        شخّص مبيعاتي
+                    </button>
+                </div>
+                
+                <div class="result-section">
+                    <h3>تشخيص المبيعات</h3>
+                    <div class="result-placeholder" id="sales-result">
+                        <div class="placeholder-icon">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <p>سيظهر تشخيص مبيعاتك هنا</p>
+                        <small>سنكشف نقاط ضعف الإقناع ونعطيك حلولاً</small>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 📊 الواجهة 6: النتائج -->
+        <section id="results-page" class="page">
+            <div class="diagnosis-header">
+                <h1>
+                    <i class="fas fa-chart-bar"></i>
+                    لوحة النتائج والتقارير
+                </h1>
+                <p>راجع جميع تشخيصاتك السابقة</p>
+            </div>
+            
+            <div class="results-container">
+                <div class="stats-section">
+                    <h3>إحصائياتك</h3>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-value">٠</div>
+                            <div class="stat-label">عدد التشخيصات</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">٠%</div>
+                            <div class="stat-label">متوسط التحسن</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">٠</div>
+                            <div class="stat-label">ساعات وفرتها</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">٠</div>
+                            <div class="stat-label">نقاط قوة اكتشفتها</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="history-section">
+                    <h3>سجل التشخيصات</h3>
+                    <div class="history-list" id="historyList">
+                        <div class="empty-history">
+                            <i class="fas fa-history"></i>
+                            <p>لا توجد تشخيصات سابقة بعد</p>
+                            <button class="btn-primary" onclick="showPage('time')">
+                                <i class="fas fa-plus"></i>
+                                ابدأ أول تشخيص لك
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tips-section">
+                    <h3>نصائح للتحسين</h3>
+                    <div class="tips-list">
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>ابدأ بتشخيص واحد</h4>
+                                <p>ركز على مجال واحد أولاً مثل إدارة الوقت</p>
+                            </div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>تابع تقدمك</h4>
+                                <p>سجل نتائجك هنا لترى تحسنك مع الوقت</p>
+                            </div>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <i class="fas fa-redo"></i>
+                            </div>
+                            <div class="tip-content">
+                                <h4>جرب أكثر من مرة</h4>
+                                <p>كل تشخيص يعطيك رؤية جديدة</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
     
-    return ContentService
-      .createTextOutput(JSON.stringify(response))
-      .setMimeType(ContentService.MimeType.JSON);
+    <!-- === 3. التذييل === -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="fas fa-crown"></i>
+                    <span>رائد</span>
+                </div>
+                <p class="footer-tagline">التشخيص الذكي لأعمالك</p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>التشخيصات</h4>
+                    <a onclick="showPage('time')">إدارة الوقت</a>
+                    <a onclick="showPage('social')">التواصل</a>
+                    <a onclick="showPage('writing')">الكتابة</a>
+                    <a onclick="showPage('sales')">المبيعات</a>
+                </div>
+                
+                <div class="link-group">
+                    <h4>المساعدة</h4>
+                    <a onclick="showDemo()">كيفية الاستخدام</a>
+                    <a onclick="showPage('results')">نتائجي</a>
+                    <a href="#">الأسئلة الشائعة</a>
+                </div>
+                
+                <div class="link-group">
+                    <h4>حول رائد</h4>
+                    <a href="#">عن المنصة</a>
+                    <a href="#">طريقة العمل</a>
+                    <a href="#">الخصوصية</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2024 منصة رائد. جميع التشخيصات باستخدام الذكاء الاصطناعي.</p>
+            <p class="developer">بُني بكل ❤️ لمساعدة رواد الأعمال العرب</p>
+        </div>
+    </footer>
     
-  } catch (error) {
-    return ContentService
-      .createTextOutput(JSON.stringify({
-        success: false,
-        message: "خطأ: " + error.message
-      }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doGet(e) {
-  return ContentService
-    .createTextOutput(JSON.stringify({
-      success: true,
-      message: "خادم منصة لغتي يعمل",
-      version: "2.0",
-      features: ["بلاغة", "إعراب", "وضعية إدماجية"]
-    }))
-    .setMimeType(ContentService.MimeType.JSON);
-}
+    <!-- === 4. رسائل التنبيه === -->
+    <div class="alert-container" id="alertContainer"></div>
+    
+    <!-- === 5. تضمين JavaScript === -->
+    <script src="script.js"></script>
+</body>
+</html>
