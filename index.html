@@ -1,97 +1,89 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <title>منصة رائد - تمارين تفاعلية</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f0f4f8; color: #1f2937; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
-    header { background-color:#2563eb; color:white; width:100%; padding:1rem; text-align:center; font-size:1.5rem; }
-    main { margin:2rem; width:90%; max-width:800px; background:white; padding:2rem; border-radius:10px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
-    textarea { width:100%; height:150px; padding:0.5rem; font-size:1rem; margin-bottom:1rem; }
-    select, button { padding:0.5rem 1rem; font-size:1rem; margin-right:1rem; margin-bottom:1rem; }
-    #result { margin-top:1rem; padding:1rem; border:1px solid #ccc; border-radius:5px; background-color:#eef2ff; white-space:pre-wrap; }
-    .scenario { margin-bottom:1rem; padding:0.5rem; border:1px solid #ccc; border-radius:5px; background:#f9fafb; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة رائد - تمارين تفاعلية</title>
+<style>
+body { font-family: Arial, sans-serif; background-color: #f0f4f8; color: #111; margin:0; padding:0; direction: rtl; }
+header { background-color: #2563eb; color: white; padding: 15px; text-align: center; font-size: 1.5em; }
+.container { padding: 20px; max-width: 800px; margin: auto; }
+button { background-color: #2563eb; color: white; border: none; padding: 10px 20px; margin:5px; cursor: pointer; border-radius:5px; font-size:1em; }
+button:hover { background-color: #1d4ed8; }
+textarea { width: 100%; height: 150px; padding: 10px; font-size: 1em; margin-top:10px; }
+.result { background-color: #e0e7ff; padding: 15px; margin-top: 15px; border-radius:5px; animation: fadeIn 0.5s; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+</style>
 </head>
 <body>
+<header>منصة رائد - تمارين تفاعلية</header>
+<div class="container">
+  <div id="mainMenu">
+    <h2>اختر المعمل</h2>
+    <button onclick="startExercise('الوقت')">معمل الوقت</button>
+    <button onclick="startExercise('التواصل')">معمل التواصل</button>
+    <button onclick="startExercise('الكتابة')">معمل الكتابة</button>
+    <button onclick="startExercise('المبيعات')">معمل المبيعات</button>
+  </div>
 
-<header>منصة رائد - تمارين تفاعلية لرواد الأعمال</header>
-
-<main>
-  <label for="lab">اختر المعمل:</label>
-  <select id="lab">
-    <option value="time">معمل الوقت</option>
-    <option value="communication">معمل التواصل</option>
-    <option value="writing">معمل الكتابة</option>
-    <option value="sales">معمل المبيعات</option>
-  </select>
-
-  <div id="scenario" class="scenario"></div>
-
-  <textarea id="answer" placeholder="اكتب إجابتك هنا..."></textarea>
-  <br>
-
-  <button id="submit">أرسل للإصلاح والتقييم</button>
-
-  <div id="result"></div>
-</main>
+  <div id="exerciseArea" style="display:none;">
+    <h2 id="skillTitle"></h2>
+    <p id="scenarioText">تحميل السيناريو...</p>
+    <textarea id="userAnswer" placeholder="اكتب إجابتك هنا..."></textarea>
+    <button onclick="submitAnswer()">إرسال الإجابة</button>
+    <div id="evaluation" class="result" style="display:none;"></div>
+    <button onclick="backToMenu()">العودة للقائمة</button>
+  </div>
+</div>
 
 <script>
-  const scenarios = {
-    time: "مشروعك تأخر والمورد أبلغك بتأخير أسبوع، ماذا تفعل؟",
-    communication: "عميل غاضب من تأخر منتجه، كيف تتعامل معه؟",
-    writing: "اكتب بريداً إلكترونياً لعميل محتمل لتقديم خدمتك",
-    sales: "عميل يقول 'السعر مرتفع'، كيف ترد؟"
-  };
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzBCxknWqi-0hY2B8M7wb9Gj1mHXobB8LmIk9oAUMsQWEpZQ4PdCeTPRBEKYp6YmOlF/exec';
 
-  const labSelect = document.getElementById("lab");
-  const scenarioDiv = document.getElementById("scenario");
-  const answerInput = document.getElementById("answer");
-  const submitBtn = document.getElementById("submit");
-  const resultDiv = document.getElementById("result");
+function startExercise(skill){
+  document.getElementById('mainMenu').style.display = 'none';
+  document.getElementById('exerciseArea').style.display = 'block';
+  document.getElementById('skillTitle').innerText = `المهارة: ${skill}`;
+  document.getElementById('scenarioText').innerText = 'جارٍ تحميل السيناريو...';
 
-  function updateScenario() {
-    const lab = labSelect.value;
-    scenarioDiv.textContent = scenarios[lab];
-  }
+  // طلب السيناريو من GAS
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getScenario', skill: skill })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('scenarioText').innerText = data.scenario;
+  })
+  .catch(err => { document.getElementById('scenarioText').innerText = 'حدث خطأ أثناء تحميل السيناريو.'; });
+}
 
-  labSelect.addEventListener("change", updateScenario);
-  updateScenario();
+function submitAnswer(){
+  const answer = document.getElementById('userAnswer').value;
+  const skill = document.getElementById('skillTitle').innerText.replace('المهارة: ', '');
+  document.getElementById('evaluation').style.display = 'block';
+  document.getElementById('evaluation').innerText = 'جارٍ إرسال الإجابة والتقييم...';
 
-  submitBtn.addEventListener("click", async () => {
-    const answer = answerInput.value.trim();
-    if(!answer) {
-      alert("الرجاء كتابة إجابتك قبل الإرسال");
-      return;
-    }
-
-    resultDiv.textContent = "جارٍ توليد التقييم... ⏳";
-
-    try {
-      const response = await fetch("https://api.github.com/repos/touatwiam8-creator/RA-ED/actions/workflows/main.yml/dispatches", {
-        method: "POST",
-        headers: {
-          "Accept": "application/vnd.github+json",
-          "Authorization": "token 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"
-        },
-        body: JSON.stringify({
-          ref: "main",
-          inputs: { answer }
-        })
-      });
-
-      if(response.ok){
-        resultDiv.textContent = "تم إرسال إجابتك بنجاح.\nيمكنك الآن متابعة التقييم في GitHub Actions → AI Evaluation → Runs.";
-      } else {
-        const text = await response.text();
-        resultDiv.textContent = "فشل إرسال الإجابة:\n" + text;
-      }
-
-    } catch(err){
-      resultDiv.textContent = "حدث خطأ أثناء الإرسال:\n" + err.message;
-    }
+  fetch(GAS_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'evaluate', skill: skill, answer: answer })
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById('evaluation').innerHTML = `<b>التقييم النهائي:</b><br>${data.evaluation}`;
+  })
+  .catch(err => {
+    document.getElementById('evaluation').innerText = 'حدث خطأ أثناء التقييم.';
   });
-</script>
+}
 
+function backToMenu(){
+  document.getElementById('mainMenu').style.display = 'block';
+  document.getElementById('exerciseArea').style.display = 'none';
+  document.getElementById('userAnswer').value = '';
+  document.getElementById('evaluation').style.display = 'none';
+}
+</script>
 </body>
 </html>
