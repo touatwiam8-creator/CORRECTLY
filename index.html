@@ -2,92 +2,127 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>رائد | منصة تدريب رواد الأعمال</title>
+<title>منصة التقييم الذكي</title>
 
 <style>
 :root {
-  --blue: #2563eb;
-  --bg: #f8fafc;
-  --card: #ffffff;
-  --text: #0f172a;
+  --primary:#2563eb;
+  --dark:#0f172a;
+  --light:#f8fafc;
+  --danger:#dc2626;
+  --success:#16a34a;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, sans-serif;
-}
+* { box-sizing:border-box; font-family: "Cairo", sans-serif; }
 
 body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  margin:0;
+  background:linear-gradient(135deg,#0f172a,#020617);
+  color:white;
+  min-height:100vh;
 }
 
 header {
-  background: var(--blue);
-  color: #fff;
-  padding: 20px;
-  text-align: center;
+  padding:30px;
+  text-align:center;
+}
+
+header h1 {
+  margin:0;
+  font-size:32px;
+}
+
+header p {
+  opacity:.8;
+  margin-top:8px;
 }
 
 .container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
 }
 
-.hidden {
-  display: none;
+.skills {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:15px;
+  margin-bottom:30px;
 }
 
-.card {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  animation: fade 0.4s ease;
+.skill {
+  background:#020617;
+  border:1px solid #1e293b;
+  padding:20px;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.3s;
+  text-align:center;
+}
+
+.skill:hover {
+  transform:translateY(-5px);
+  border-color:var(--primary);
+}
+
+.skill.active {
+  background:var(--primary);
+}
+
+.panel {
+  background:#020617;
+  border:1px solid #1e293b;
+  border-radius:16px;
+  padding:25px;
+  margin-bottom:25px;
+  animation:fade .5s;
 }
 
 @keyframes fade {
-  from {opacity:0; transform:translateY(10px);}
-  to {opacity:1; transform:translateY(0);}
-}
-
-button {
-  background: var(--blue);
-  color: #fff;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-button:hover {
-  opacity: 0.9;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 15px;
+  from {opacity:0; transform:translateY(10px)}
+  to {opacity:1}
 }
 
 textarea {
-  width: 100%;
-  min-height: 160px;
-  padding: 12px;
-  font-size: 15px;
-  border-radius: 8px;
-  border: 1px solid #cbd5f5;
-  resize: vertical;
+  width:100%;
+  min-height:180px;
+  background:#020617;
+  border:1px solid #1e293b;
+  color:white;
+  border-radius:12px;
+  padding:15px;
+  font-size:15px;
+  resize:vertical;
 }
 
-.loader {
-  text-align: center;
-  padding: 20px;
+button {
+  background:var(--primary);
+  border:none;
+  color:white;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.3s;
+}
+
+button:hover {
+  opacity:.9;
+}
+
+.loading {
+  text-align:center;
+  opacity:.8;
+}
+
+.result {
+  line-height:1.9;
+}
+
+.score {
+  font-size:28px;
+  font-weight:bold;
+  margin-bottom:10px;
 }
 </style>
 </head>
@@ -95,112 +130,123 @@ textarea {
 <body>
 
 <header>
-  <h1>🚀 رائد</h1>
-  <p>منصة تمارين عملية لرواد الأعمال</p>
+  <h1>منصة التقييم الذكي</h1>
+  <p>تمارين واقعية. تقييم صريح. بدون مجاملات.</p>
 </header>
 
 <div class="container">
 
-  <!-- الصفحة الرئيسية -->
-  <div id="home" class="card">
-    <h2>اختر المعمل</h2>
-    <div class="grid">
-      <button onclick="startLab('الوقت')">⏰ معمل الوقت</button>
-      <button onclick="startLab('التواصل')">💬 معمل التواصل</button>
-      <button onclick="startLab('الكتابة')">✍️ معمل الكتابة</button>
-      <button onclick="startLab('المبيعات')">💰 معمل المبيعات</button>
-    </div>
+  <div class="skills">
+    <div class="skill" data-skill="التواصل">التواصل</div>
+    <div class="skill" data-skill="اللغة الأجنبية">اللغة الأجنبية</div>
+    <div class="skill" data-skill="إدارة الوقت">إدارة الوقت</div>
+    <div class="skill" data-skill="نقاط القوة والضعف">نقاط القوة والضعف</div>
+    <div class="skill" data-skill="الكتابة الإبداعية">الكتابة الإبداعية</div>
   </div>
 
-  <!-- التدريب -->
-  <div id="training" class="card hidden">
-    <h2 id="labTitle"></h2>
-    <p id="scenario"></p>
+  <div class="panel" id="challenge">
+    اختر مهارة لبدء التحدي.
+  </div>
 
-    <textarea id="answer" placeholder="اكتب حلك هنا..."></textarea>
-
+  <div class="panel">
+    <textarea id="answer" placeholder="اكتب إجابتك هنا بوضوح..."></textarea>
     <br><br>
-    <button onclick="sendAnswer()">إرسال للتقييم</button>
+    <button onclick="evaluate()">إرسال للتقييم</button>
   </div>
 
-  <!-- التحميل -->
-  <div id="loading" class="card hidden loader">
-    ⏳ جاري التحليل...
-  </div>
-
-  <!-- النتيجة -->
-  <div id="result" class="card hidden">
-    <h2>📊 التقييم</h2>
-    <pre id="resultText" style="white-space:pre-wrap;"></pre>
-    <br>
-    <button onclick="resetApp()">تمرين جديد</button>
-  </div>
+  <div class="panel" id="output"></div>
 
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyDZZImC5zLieIVrKP8gTuL5rhIUVDppEI-5bmipedZcIpSS2mYGegViJlUZIgSPra1Jw/exec";
+// 🔑 ضع مفتاحك هنا (مرئي كما طلبت)
+const API_KEY = "";
+
+// نموذج الاستدعاء — عدّل endpoint حسب الذكاء الذي تستخدمه
+const API_URL = "https://api.openai.com/v1/chat/completions";
 
 let currentSkill = "";
 let currentScenario = "";
 
-const scenarios = {
-  "الوقت": "لديك مشروع متأخر، وفريقك يشتكي من ضغط المهام. كيف تعيد تنظيم الوقت وتستعيد السيطرة؟",
-  "التواصل": "عميل غاضب يهدد بتركك بسبب تأخير. كيف تتعامل معه دون خسارته؟",
-  "الكتابة": "اكتب رسالة بريد إلكتروني مقنعة لعميل محتمل تعرض فيها خدمتك.",
-  "المبيعات": "العميل يقول: السعر مرتفع. كيف ترد وتغلق الصفقة؟"
-};
+document.querySelectorAll(".skill").forEach(el=>{
+  el.onclick = async ()=>{
+    document.querySelectorAll(".skill").forEach(s=>s.classList.remove("active"));
+    el.classList.add("active");
+    currentSkill = el.dataset.skill;
+    await generateScenario();
+  };
+});
 
-function startLab(skill) {
-  currentSkill = skill;
-  currentScenario = scenarios[skill];
+async function generateScenario() {
+  document.getElementById("challenge").innerHTML = "<div class='loading'>يتم توليد التحدي...</div>";
 
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("training").classList.remove("hidden");
+  const prompt = `
+أنت نظام تدريب حيادي صارم.
+أنشئ سيناريو أو تحدي واقعي في مهارة: ${currentSkill}.
+الطول متغير (من 200 إلى 1000 كلمة).
+بدون أي مجاملات أو تبسيط.
+`;
 
-  document.getElementById("labTitle").innerText = "معمل " + skill;
-  document.getElementById("scenario").innerText = currentScenario;
-}
-
-function sendAnswer() {
-  const answer = document.getElementById("answer").value.trim();
-  if (!answer) {
-    alert("اكتب إجابتك أولاً");
-    return;
-  }
-
-  document.getElementById("training").classList.add("hidden");
-  document.getElementById("loading").classList.remove("hidden");
-
-  fetch(GAS_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      skill: currentSkill,
-      scenario: currentScenario,
-      answer: answer
+  const res = await fetch(API_URL,{
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer "+API_KEY,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      model:"gpt-4o-mini",
+      messages:[{role:"user",content:prompt}]
     })
-  })
-  .then(res => res.json())
-  .then(data => {
-    document.getElementById("loading").classList.add("hidden");
-    document.getElementById("result").classList.remove("hidden");
-
-    if (data.status === "success") {
-      document.getElementById("resultText").innerText = data.result;
-    } else {
-      document.getElementById("resultText").innerText = "حدث خطأ:\n" + data.message;
-    }
-  })
-  .catch(() => {
-    document.getElementById("loading").classList.add("hidden");
-    alert("فشل الاتصال بالخادم");
   });
+
+  const data = await res.json();
+  currentScenario = data.choices[0].message.content;
+  document.getElementById("challenge").innerText = currentScenario;
 }
 
-function resetApp() {
-  document.getElementById("result").classList.add("hidden");
-  document.getElementById("home").classList.remove("hidden");
-  document.getElementById("answer").value = "";
+async function evaluate() {
+  const userAnswer = document.getElementById("answer").value.trim();
+  if(!userAnswer || !currentScenario) return alert("أكمل التحدي أولاً.");
+
+  document.getElementById("output").innerHTML = "<div class='loading'>يتم التقييم...</div>";
+
+  const prompt = `
+قيّم الإجابة التالية بصرامة حيادية تامة.
+
+المهارة: ${currentSkill}
+السيناريو:
+${currentScenario}
+
+إجابة المستخدم:
+${userAnswer}
+
+أعد:
+- درجة من 100
+- تحليل نقاط القوة
+- تحليل نقاط الضعف
+- توصيات عملية
+بدقة ووضوح.
+`;
+
+  const res = await fetch(API_URL,{
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer "+API_KEY,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      model:"gpt-4o-mini",
+      messages:[{role:"user",content:prompt}]
+    })
+  });
+
+  const data = await res.json();
+  document.getElementById("output").innerHTML = `
+    <div class="result">
+      <div class="score">النتيجة</div>
+      ${data.choices[0].message.content.replace(/\n/g,"<br>")}
+    </div>
+  `;
 }
 </script>
 
